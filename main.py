@@ -72,4 +72,23 @@ async def post_home(request: Request, message: str = Form(...)):
     return templates.TemplateResponse("index.html", {
         "request": request,
         "response": f"Siz: {message} → Zeekup AI: {reply}"
+    from fastapi import Depends
+from sqlalchemy.orm import Session
+
+# Bağlantı kuran yardımcı fonksiyon
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# Admin paneli - Mesaj geçmişi
+@app.get("/history", response_class=HTMLResponse)
+async def get_history(request: Request, db: Session = Depends(get_db)):
+    messages = db.query(Message).order_by(Message.timestamp.desc()).all()
+    return templates.TemplateResponse("history.html", {
+        "request": request,
+        "messages": messages
     })
+
