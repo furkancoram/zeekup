@@ -16,6 +16,47 @@
       font-family: 'Segoe UI', sans-serif;
       color: white;
       display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #14142f;
+      border-right: 1px solid #222;
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+    .sidebar h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #3b82f6;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      padding: 10px 0;
+      cursor: pointer;
+    }
+    .toggle-btn {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      background-color: #3b82f6;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 100;
+    }
+    .main {
+      flex: 1;
+      display: flex;
       flex-direction: column;
       height: 100vh;
     }
@@ -88,19 +129,40 @@
   </style>
 </head>
 <body>
-  <header>Nasıl yardımcı olabilirim?</header>
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
-  <div class="chat-container">
-    {% for role, msg in chat_history %}
-      <div class="message {{ role }}">
-        {{ msg }}
-      </div>
-    {% endfor %}
+  <div class="sidebar" id="sidebar">
+    <h2>Zeekup AI 💙</h2>
+    <ul>
+      <li>🧠 Yeni Sohbet</li>
+      <li>📂 Projelerim</li>
+      <li>📊 İstatistik</li>
+      <li>⚙️ Ayarlar</li>
+    </ul>
   </div>
 
-  <form method="post">
-    <input type="text" name="message" placeholder="Herhangi bir şey sor..." autocomplete="off" required>
-    <button type="submit">Gönder</button>
-  </form>
+  <div class="main">
+    <header>Nasıl yardımcı olabilirim?</header>
+
+    <div class="chat-container">
+      {% for role, msg in chat_history %}
+        <div class="message {{ role }}">
+          {{ msg }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <form method="post">
+      <input type="text" name="message" placeholder="Herhangi bir şey sor..." autocomplete="off" required>
+      <button type="submit">Gönder</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("hidden");
+    }
+  </script>
 </body>
 </html>
