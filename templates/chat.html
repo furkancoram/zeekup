@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Zeekup AI | Chat</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      background-color: #0a0a23;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .chat-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 12px;
+      border-radius: 12px;
+      line-height: 1.5;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: #1f1fff;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #222;
+      border: 1px solid #555;
+    }
+
+    form {
+      display: flex;
+      padding: 10px 20px;
+      border-top: 1px solid #333;
+      background-color: #0a0a23;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #1f1fff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #3131ff;
+    }
+  </style>
+</head>
+<body>
+  <header>Nasıl yardımcı olabilirim?</header>
+  <div class="chat-container">
+    {% for role, msg in chat_history %}
+      <div class="message {{ role }}">
+        {{ msg }}
+      </div>
+    {% endfor %}
+  </div>
+  <form method="post">
+    <input type="text" name="message" placeholder="Mesajınızı yazın..." required>
+    <button type="submit">Gönder</button>
+  </form>
+</body>
+</html>
