@@ -10,21 +10,19 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Chat geçmişini geçici tutuyoruz
 chat_history = []
 
-# Türkçe destekli küçük T5 modeli
-model_name = "google/mt5-small"
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+# Hafif, çok dilli (Türkçe dahil) T5 modeli
+model_name = "t5-small"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-# AI cevabı üretir
 def generate_reply(message: str) -> str:
     try:
-        input_text = "soru: " + message + " cevap:"
-        input_ids = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
-        output = model.generate(input_ids, max_length=100, num_return_sequences=1)
-        reply = tokenizer.decode(output[0], skip_special_tokens=True)
+        input_text = "translate English to Turkish: " + message
+        inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
+        outputs = model.generate(inputs, max_length=100, num_return_sequences=1)
+        reply = tokenizer.decode(outputs[0], skip_special_tokens=True)
         return reply.strip()
     except Exception as e:
         return f"🤖 Bir hata oluştu: {e}"
