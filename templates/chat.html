@@ -1,198 +1,298 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zeekup AI</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8" />
+  <title>ZeekUP Chat - Örnek</title>
+  <!-- Font Awesome CDN (ikonlar için) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha512-..."
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
   <style>
-    * { box-sizing: border-box; }
-    body {
+    * {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
       display: flex;
       height: 100vh;
-      overflow: hidden;
-      background-color: #fff;
-    }
-    .sidebar {
-      width: 280px;
-      background-color: #f7f7f8;
-      border-right: 1px solid #ddd;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      justify-content: space-between;
-      padding: 20px;
-      transition: transform 0.3s ease;
-    }
-    .sidebar.hidden {
-      transform: translateX(-100%);
-    }
-    .sidebar-top {
-      flex-shrink: 0;
-    }
-    .sidebar-top h2 {
-      margin-top: 0;
-      font-size: 22px;
-      color: #111;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .sidebar-top h2 span {
-      cursor: pointer;
-      font-size: 20px;
-    }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 20px;
-    }
-    .sidebar ul li {
-      padding: 10px 0;
-      cursor: pointer;
+      background-color: #f7f7f8; /* Ana gövde rengi */
       color: #333;
     }
-    .sidebar-bottom {
-      font-size: 14px;
-    }
-    .sidebar-bottom h3 {
-      margin: 20px 0 10px;
-      font-size: 16px;
-      color: #555;
-    }
-    .sidebar-bottom ul li {
-      padding: 6px 0;
-      color: #444;
-    }
-    .toggle-btn {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      background-color: #3b82f6;
-      border: none;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 100;
-    }
-    .main {
-      flex: 1;
+
+    /* SOL SİDEBAR */
+    .sidebar {
+      width: 260px;
+      background-color: #ffffff;
+      border-right: 1px solid #e0e0e0;
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+      justify-content: space-between;
     }
-    header {
-      padding: 20px;
-      text-align: center;
-      font-size: 26px;
-      font-weight: 600;
-      border-bottom: 1px solid #ddd;
+
+    /* Üst kısım (logo, yeni sohbet butonu vb.) */
+    .sidebar-header {
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
     }
-    .chat-container {
+
+    .sidebar-header h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .new-chat-btn {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #efefef;
+      border: none;
+      padding: 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .new-chat-btn:hover {
+      background-color: #ddd;
+    }
+
+    .new-chat-btn i {
+      margin-right: 8px;
+    }
+
+    /* Profil bölümü */
+    .profile-section, .settings-section {
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .profile-section h3,
+    .settings-section h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-form label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .profile-form input[type="file"],
+    .profile-form input[type="text"],
+    .profile-form input[type="date"] {
+      display: block;
+      width: 100%;
+      margin-bottom: 0.8rem;
+      padding: 0.4rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    /* Ayarlar bölümü */
+    .settings-list {
+      list-style: none;
+      font-size: 0.9rem;
+    }
+
+    .settings-list li {
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .settings-list li:hover {
+      color: #5f5f5f;
+    }
+
+    /* ZeekUP'larım başlığı ve sohbet geçmişi */
+    .zeekup-title {
+      padding: 1rem;
+      font-size: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+      font-weight: bold;
+    }
+
+    .chat-history {
       flex: 1;
       overflow-y: auto;
-      padding: 40px;
+      padding: 1rem;
+      list-style: none;
+    }
+
+    .chat-history li {
+      margin-bottom: 0.8rem;
+      padding: 0.5rem;
+      background-color: #f4f4f4;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .chat-history li:hover {
+      background-color: #e6e6e6;
+    }
+
+    /* ANA İÇERİK */
+    .main-content {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 20px;
     }
-    .message {
-      max-width: 60%;
-      padding: 14px 20px;
-      border-radius: 20px;
-      font-size: 17px;
-      line-height: 1.6;
-      word-wrap: break-word;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .user {
-      align-self: flex-end;
-      background-color: #e0e7ff;
-      color: #000;
-    }
-    .bot {
-      align-self: flex-start;
-      background-color: #f3f3f4;
-    }
-    form {
-      display: flex;
-      padding: 16px 40px;
-      border-top: 1px solid #eee;
+
+    .chat-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e0e0e0;
       background-color: #fff;
+      text-align: center;
     }
-    input[type="text"] {
+
+    .chat-header h1 {
+      font-size: 1.5rem;
+      font-weight: normal;
+    }
+
+    .chat-body {
       flex: 1;
-      padding: 14px 20px;
-      border-radius: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f7f7f8;
+      padding: 1rem;
+    }
+
+    /* Soru input alanı */
+    .chat-input {
+      display: flex;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .chat-input input {
+      width: 300px;
+      padding: 0.5rem;
       border: 1px solid #ccc;
-      font-size: 16px;
+      border-radius: 4px 0 0 4px;
       outline: none;
-      margin-right: 10px;
     }
-    button {
-      padding: 14px 24px;
-      border-radius: 30px;
+
+    .chat-input button {
+      padding: 0.5rem 1rem;
       border: none;
-      background-color: #3b82f6;
-      color: white;
-      font-weight: bold;
+      background-color: #4c83ff;
+      color: #fff;
       cursor: pointer;
-      transition: 0.2s;
+      font-weight: bold;
+      border-radius: 0 4px 4px 0;
+      outline: none;
+      transition: background-color 0.2s ease;
     }
-    button:hover {
-      background-color: #2563eb;
+
+    .chat-input button:hover {
+      background-color: #3a6ada;
     }
+
+    /* Scrollbar özelleştirme (isteğe bağlı) */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #bbb;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: #f0f0f0;
+    }
+
   </style>
 </head>
 <body>
-  <button class="toggle-btn" onclick="toggleSidebar()">📝</button>
 
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-top">
-      <h2>Zeekup AI 💙 <span onclick="toggleSidebar()">✖</span></h2>
-      <ul>
-        <li>👤 Profil</li>
-        <li>⚙️ Ayarlar</li>
+  <!-- SOL MENÜ (SIDEBAR) -->
+  <div class="sidebar">
+    <!-- ÜST KISIM: Başlık ve Yeni Sohbet Butonu -->
+    <div class="sidebar-header">
+      <h2>ChatGPT 4.0</h2>
+      <button class="new-chat-btn">
+        <i class="fas fa-pen-nib"></i>
+        Yeni Sohbet
+      </button>
+    </div>
+
+    <!-- PROFİL BÖLÜMÜ -->
+    <div class="profile-section">
+      <h3>Profil</h3>
+      <!-- İstenirse açılır/kapanır şekilde veya başka sayfaya yönlendirme yapılabilir -->
+      <form class="profile-form">
+        <label for="profile-pic">Profil Resmi:</label>
+        <input type="file" id="profile-pic" name="profile-pic" accept="image/*" />
+
+        <label for="name-surname">İsim Soyisim:</label>
+        <input type="text" id="name-surname" name="name-surname" placeholder="İsim Soyisim" />
+
+        <label for="birthdate">Doğum Tarihi:</label>
+        <input type="date" id="birthdate" name="birthdate" />
+      </form>
+    </div>
+
+    <!-- AYARLAR BÖLÜMÜ -->
+    <div class="settings-section">
+      <h3>Ayarlar</h3>
+      <ul class="settings-list">
+        <li>Sohbet Geçmişini Temizle</li>
+        <li>Verileri Sil</li>
+        <li>Abonelik Yönetimi</li>
+        <li>Dark Mode</li>
       </ul>
     </div>
-    <div class="sidebar-bottom">
-      <h3>📁 ZeekUp'larım</h3>
-      <ul id="zeekup-list">
-        <!-- Dinamik içerik gelecek -->
-      </ul>
+
+    <!-- ZeekUP'larım BAŞLIĞI -->
+    <div class="zeekup-title">
+      ZeekUP'larım
+    </div>
+
+    <!-- Sohbet Geçmişi -->
+    <ul class="chat-history">
+      <li>Sohbet 1</li>
+      <li>Sohbet 2</li>
+      <li>Sohbet 3</li>
+      <li>Sohbet 4</li>
+      <li>Sohbet 5</li>
+      <!-- İstediğin kadar ekleyebilirsin -->
+    </ul>
+  </div>
+
+  <!-- ANA İÇERİK ALANI -->
+  <div class="main-content">
+    <!-- Üstteki başlık -->
+    <div class="chat-header">
+      <h1>Nasıl yardımcı olabilirim?</h1>
+    </div>
+
+    <!-- Ortadaki boş/chat alanı -->
+    <div class="chat-body">
+      <p>Buraya cevaplar veya içerikler gelecek...</p>
+
+      <!-- Kullanıcının soru sorduğu input alanı -->
+      <div class="chat-input">
+        <input type="text" placeholder="Herhangi bir şey sor..." />
+        <button>Sor</button>
+      </div>
     </div>
   </div>
 
-  <div class="main">
-    <header>Nasıl yardımcı olabilirim?</header>
-
-    <div class="chat-container" id="chat-container">
-      {% for role, msg in chat_history %}
-        <div class="message {{ role }}">
-          {{ msg }}
-        </div>
-      {% endfor %}
-    </div>
-
-    <form method="post">
-      <input type="text" name="message" placeholder="Herhangi bir şey sor..." autocomplete="off" required>
-      <button type="submit">Gönder</button>
-    </form>
-  </div>
-
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("hidden");
-    }
-
-    // Sahte geçmiş temizleme: Dinamik oluşturulmuş Zeekup geçmişi kaldırıldı.
-    document.getElementById("zeekup-list").innerHTML = "";
-  </script>
 </body>
 </html>
