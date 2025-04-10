@@ -3,13 +3,36 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy.orm import declarative_base, sessionmaker
+from datetime import datetime
+
+# FastAPI başlat
 app = FastAPI()
 
-# HTML ve CSS dizinlerini bağla
+# HTML & Statik dosyalar
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Basit kural tabanlı yanıt üretici fonksiyon
+# Veritabanı ayarları
+DATABASE_URL = "sqlite:///./messages.db"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(bind=engine)
+Base = declarative_base()
+
+# Mesaj tablosu
+class Message(Base):
+    __tablename__ = "message_log"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_message = Column(String)
+    bot_reply = Column(String)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+# Veritabanını oluştur (ilk çalıştırmada tabloyu kurar)
+Base.metadata.create_all(bind=engine)
+
+# Basit chatbot yanıtları
 def chatbot_response(message: str) -> str:
     msg = message.lower()
 
@@ -26,7 +49,7 @@ def chatbot_response(message: str) -> str:
     else:
         return "Üzgünüm, bunu tam anlayamadım 😅 Ama öğrenmeye açığım!"
 
-# GET → Ana sayfa
+# Ana sayfa
 @app.get("/", response_class=HTMLResponse)
 async def get_home(request: Request):
     return templates.TemplateResponse("index.html", {
@@ -34,11 +57,19 @@ async def get_home(request: Request):
         "response": None
     })
 
-# POST → Chat mesajı geldiğinde
+# Mesaj geldiğinde POST işlemi
 @app.post("/", response_class=HTMLResponse)
 async def post_home(request: Request, message: str = Form(...)):
-    bot_reply = chatbot_response(message)
+    reply = chatbot_response(message)
+
+    # Veritabanına kaydet
+    db = SessionLocal()
+    new_message = Message(user_message=message, bot_reply=reply)
+    db.add(new_message)
+    db.commit()
+    db.close()
+
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "response": f"Siz: {message} → Zeekup AI: {bot_reply}"
+        "response": f"Siz: {message} → Zeekup AI: {reply}"
     })
