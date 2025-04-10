@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mesaj Geçmişi | Zeekup AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="chatbox">
+        <h2>📜 Zeekup AI – Mesaj Geçmişi</h2>
+        {% if messages %}
+            <ul>
+                {% for msg in messages %}
+                    <li style="margin-bottom: 15px;">
+                        <strong>Siz:</strong> {{ msg.user_message }}<br>
+                        <strong>Zeekup AI:</strong> {{ msg.bot_reply }}<br>
+                        <em>{{ msg.timestamp.strftime('%d.%m.%Y %H:%M') }}</em>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Henüz mesaj kaydı yok 👀</p>
+        {% endif %}
+        <a href="/" style="color: #0ff;">← Ana Sayfaya Dön</a>
+    </div>
+</body>
+</html>
