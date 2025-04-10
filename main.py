@@ -1,16 +1,16 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from datetime import datetime
 
 # FastAPI başlat
 app = FastAPI()
 
-# HTML & Statik dosyalar
+# HTML ve statik klasörleri tanımla
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -20,19 +20,18 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
-# Mesaj tablosu
+# Veritabanı modeli
 class Message(Base):
     __tablename__ = "message_log"
-
     id = Column(Integer, primary_key=True, index=True)
     user_message = Column(String)
     bot_reply = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
-# Veritabanını oluştur (ilk çalıştırmada tabloyu kurar)
+# Veritabanı tablolarını oluştur
 Base.metadata.create_all(bind=engine)
 
-# Basit chatbot yanıtları
+# Basit yanıt üreten chatbot fonksiyonu
 def chatbot_response(message: str) -> str:
     msg = message.lower()
 
@@ -49,7 +48,7 @@ def chatbot_response(message: str) -> str:
     else:
         return "Üzgünüm, bunu tam anlayamadım 😅 Ama öğrenmeye açığım!"
 
-# Ana sayfa
+# Ana sayfa (GET)
 @app.get("/", response_class=HTMLResponse)
 async def get_home(request: Request):
     return templates.TemplateResponse("index.html", {
@@ -57,7 +56,7 @@ async def get_home(request: Request):
         "response": None
     })
 
-# Mesaj geldiğinde POST işlemi
+# Ana sayfa (POST - mesaj gönderimi)
 @app.post("/", response_class=HTMLResponse)
 async def post_home(request: Request, message: str = Form(...)):
     reply = chatbot_response(message)
@@ -72,10 +71,9 @@ async def post_home(request: Request, message: str = Form(...)):
     return templates.TemplateResponse("index.html", {
         "request": request,
         "response": f"Siz: {message} → Zeekup AI: {reply}"
-    from fastapi import Depends
-from sqlalchemy.orm import Session
+    })
 
-# Bağlantı kuran yardımcı fonksiyon
+# Veritabanı oturumu yöneticisi
 def get_db():
     db = SessionLocal()
     try:
@@ -83,7 +81,7 @@ def get_db():
     finally:
         db.close()
 
-# Admin paneli - Mesaj geçmişi
+# Mesaj geçmişi görüntüleme (/history)
 @app.get("/history", response_class=HTMLResponse)
 async def get_history(request: Request, db: Session = Depends(get_db)):
     messages = db.query(Message).order_by(Message.timestamp.desc()).all()
@@ -91,4 +89,3 @@ async def get_history(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "messages": messages
     })
-
