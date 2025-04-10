@@ -2,14 +2,14 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Zeekup AI - Chat Demo</title>
+    <title>Zeekup AI 💬</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="chatbox">
         <h2>Zeekup AI 💬</h2>
         <form method="post">
-            <input type="number" step="any" name="message" placeholder="Bir sayı girin..." required />
+            <input type="text" name="message" placeholder="Mesajınızı yazın..." required />
             <button type="submit">Gönder</button>
         </form>
         {% if response %}
