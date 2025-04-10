@@ -5,29 +5,35 @@ from fastapi.templating import Jinja2Templates
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
+# FastAPI uygulamasını başlat
 app = FastAPI()
 
-# HTML şablonlar ve statik dosyalar
+# Statik dosya ve HTML şablon klasörlerini bağla
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Model verisi
+# Örnek verilerle model oluştur
 X = np.array([[1], [2], [3], [4], [5]])
 y = np.array([2, 4, 6, 8, 10])
 model = LinearRegression()
 model.fit(X, y)
 
-# Ana sayfa (GET)
+# Ana sayfa - form görüntüsü (GET)
 @app.get("/", response_class=HTMLResponse)
 async def get_home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "response": None})
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "response": None
+    })
 
-# Form gönderildiğinde tahmin işlemi (POST)
+# Form gönderimiyle tahmin yap (POST)
 @app.post("/", response_class=HTMLResponse)
 async def post_home(request: Request, message: float = Form(...)):
     input_value = np.array([[message]])
     prediction = model.predict(input_value)[0]
+    
+    # Noktadan sonrası silinsin diye int() kullanıyoruz
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "response": f"Girilen değer: {message} → Tahmin: {round(prediction, 2)}"
+        "response": f"Girilen değer: {int(message)} → Tahmin: {int(prediction)}"
     })
