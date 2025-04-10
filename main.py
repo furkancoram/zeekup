@@ -7,23 +7,25 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import torch
 
 app = FastAPI()
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Türkçe destekli hafif model (Render dostu)
+chat_history = []
+
+# Türkçe destekli AI modeli (HuggingFace üzerinden)
 model_name = "csebuetnlp/mT5_multilingual_XLSum"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-chat_history = []
-
 def generate_reply(message: str) -> str:
-    input_text = "summarize: " + message
-    inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
-    outputs = model.generate(inputs, max_length=100, num_return_sequences=1)
-    reply = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return reply.strip()
+    try:
+        input_text = "summarize: " + message
+        inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
+        outputs = model.generate(inputs, max_length=100, num_return_sequences=1)
+        reply = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return reply.strip()
+    except Exception as e:
+        return f"🤖 Hata oluştu: {e}"
 
 @app.get("/", response_class=HTMLResponse)
 async def get_home(request: Request):
