@@ -22,6 +22,7 @@
       border-right: 1px solid #ddd;
       display: flex;
       flex-direction: column;
+      height: 100vh;
       justify-content: space-between;
       padding: 20px;
       transition: transform 0.3s ease;
@@ -83,6 +84,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      overflow: hidden;
     }
     header {
       padding: 20px;
@@ -160,10 +162,8 @@
     </div>
     <div class="sidebar-bottom">
       <h3>📁 ZeekUp'larım</h3>
-      <ul>
-        <li>Selamlaşma</li>
-        <li>API ile İlgili Notlar</li>
-        <li>Yazılım Projesi</li>
+      <ul id="zeekup-list">
+        <!-- Dinamik içerik gelecek -->
       </ul>
     </div>
   </div>
@@ -171,7 +171,7 @@
   <div class="main">
     <header>Nasıl yardımcı olabilirim?</header>
 
-    <div class="chat-container">
+    <div class="chat-container" id="chat-container">
       {% for role, msg in chat_history %}
         <div class="message {{ role }}">
           {{ msg }}
@@ -190,6 +190,9 @@
       const sidebar = document.getElementById("sidebar");
       sidebar.classList.toggle("hidden");
     }
+
+    // Sahte geçmiş temizleme: Dinamik oluşturulmuş Zeekup geçmişi kaldırıldı.
+    document.getElementById("zeekup-list").innerHTML = "";
   </script>
 </body>
 </html>
