@@ -3,17 +3,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-# FastAPI uygulaması başlatılıyor
 app = FastAPI()
 
-# Statik dosyalar ve HTML şablon klasörü
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Mesaj geçmişi (geçici bellek - RAM)
+# Geçici bellek (geçici olarak sohbet geçmişini tutar)
 chat_history = []
 
-# Basit cevap veren yapay zeka fonksiyonu
 def chatbot_response(message: str) -> str:
     msg = message.lower()
     if "merhaba" in msg:
@@ -29,7 +26,6 @@ def chatbot_response(message: str) -> str:
     else:
         return "Üzgünüm, bunu tam anlayamadım 😅 Ama öğrenmeye açığım!"
 
-# Ana sayfa (GET)
 @app.get("/", response_class=HTMLResponse)
 async def get_home(request: Request):
     return templates.TemplateResponse("chat.html", {
@@ -37,7 +33,6 @@ async def get_home(request: Request):
         "chat_history": chat_history
     })
 
-# Mesaj gönderildiğinde (POST)
 @app.post("/", response_class=HTMLResponse)
 async def post_home(request: Request, message: str = Form(...)):
     bot_reply = chatbot_response(message)
