@@ -2,23 +2,31 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import numpy as np
-from sklearn.linear_model import LinearRegression
 
-# FastAPI uygulamasını başlat
 app = FastAPI()
 
-# Statik dosya ve HTML şablon klasörlerini bağla
+# HTML ve CSS dizinlerini bağla
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Örnek verilerle model oluştur
-X = np.array([[1], [2], [3], [4], [5]])
-y = np.array([2, 4, 6, 8, 10])
-model = LinearRegression()
-model.fit(X, y)
+# Basit kural tabanlı yanıt üretici fonksiyon
+def chatbot_response(message: str) -> str:
+    msg = message.lower()
 
-# Ana sayfa - form görüntüsü (GET)
+    if "merhaba" in msg:
+        return "Merhaba! Ben Zeekup AI 🤖 Sana nasıl yardımcı olabilirim?"
+    elif "hava" in msg:
+        return "Hava durumunu bilemiyorum ama umarım güneşlidir! ☀️"
+    elif "teşekkür" in msg:
+        return "Rica ederim kankam! 🙌"
+    elif "adın ne" in msg:
+        return "Ben Zeekup AI! Senin dijital kankan 😎"
+    elif "ne yapabilirsin" in msg:
+        return "Sana bilgi verebilirim, sayı tahmini yapabilirim, yakında çok daha fazlasını!"
+    else:
+        return "Üzgünüm, bunu tam anlayamadım 😅 Ama öğrenmeye açığım!"
+
+# GET → Ana sayfa
 @app.get("/", response_class=HTMLResponse)
 async def get_home(request: Request):
     return templates.TemplateResponse("index.html", {
@@ -26,14 +34,11 @@ async def get_home(request: Request):
         "response": None
     })
 
-# Form gönderimiyle tahmin yap (POST)
+# POST → Chat mesajı geldiğinde
 @app.post("/", response_class=HTMLResponse)
-async def post_home(request: Request, message: float = Form(...)):
-    input_value = np.array([[message]])
-    prediction = model.predict(input_value)[0]
-    
-    # Noktadan sonrası silinsin diye int() kullanıyoruz
+async def post_home(request: Request, message: str = Form(...)):
+    bot_reply = chatbot_response(message)
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "response": f"Girilen değer: {int(message)} → Tahmin: {int(prediction)}"
+        "response": f"Siz: {message} → Zeekup AI: {bot_reply}"
     })
