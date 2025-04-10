@@ -4,6 +4,5 @@ jinja2
 python-multipart
 transformers
 torch
-tiktoken
 protobuf
 blobfile
