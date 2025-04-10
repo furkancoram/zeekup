@@ -27,22 +27,11 @@
       flex-direction: column;
       height: 100vh;
       padding: 20px;
-      transition: transform 0.3s ease;
-    }
-    .sidebar.hidden {
-      transform: translateX(-100%);
     }
     .sidebar h2 {
       margin-top: 0;
       font-size: 22px;
       color: #111;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .sidebar h2 span {
-      cursor: pointer;
-      font-size: 20px;
     }
     .sidebar ul {
       list-style: none;
@@ -123,6 +112,7 @@
     .bot {
       align-self: flex-start;
       background-color: #f3f3f4;
+      color: #000;
     }
     form {
       display: flex;
@@ -138,6 +128,8 @@
       font-size: 16px;
       outline: none;
       margin-right: 10px;
+      color: #000;
+      background-color: #fff;
     }
     button {
       padding: 14px 24px;
@@ -155,10 +147,10 @@
   </style>
 </head>
 <body>
-  <button class="toggle-btn" onclick="toggleSidebar()">📝</button>
+  <button class="toggle-btn" onclick="startNewChat()">📝</button>
 
   <div class="sidebar" id="sidebar">
-    <h2>Zeekup AI 💙 <span onclick="toggleSidebar()">✖</span></h2>
+    <h2>Zeekup AI 💙</h2>
     <ul>
       <li>👤 Profil</li>
       <li>⚙️ Ayarlar</li>
@@ -183,19 +175,22 @@
     </div>
 
     <form method="post">
-      <input type="text" name="message" placeholder="Herhangi bir şey sor..." autocomplete="off" required>
+      <input type="text" name="message" id="messageInput" placeholder="Herhangi bir şey sor..." autocomplete="off" required>
       <button type="submit">Gönder</button>
     </form>
   </div>
 
   <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("hidden");
+    function startNewChat() {
+      const input = document.getElementById("messageInput");
+      const value = input.value.trim();
+      if (value) {
+        const list = document.getElementById("zeekup-list");
+        const item = document.createElement("li");
+        item.textContent = value;
+        list.prepend(item);
+      }
     }
-
-    // Dinamik içerik başlangıçta boş bırakılıyor
-    document.getElementById("zeekup-list").innerHTML = "";
   </script>
 </body>
 </html>
