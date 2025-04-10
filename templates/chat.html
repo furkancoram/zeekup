@@ -179,21 +179,20 @@
       <button type="submit">Gönder</button>
     </form>
   </div>
-
-<script>
-  function startNewChat() {
-    const userMessages = document.querySelectorAll('.message.user');
-    if (userMessages.length > 0) {
-      const last = userMessages[userMessages.length - 1];
-      const content = last.textContent.trim();
-      if (content) {
-        const list = document.getElementById("zeekup-list");
-        const item = document.createElement("li");
-        item.textContent = content;
-        list.prepend(item);
+  <script>
+    function startNewChat() {
+      const userMessages = document.querySelectorAll('.message.user');
+      if (userMessages.length > 0) {
+        const last = userMessages[userMessages.length - 1];
+        const content = last.textContent.trim();
+        if (content) {
+          const list = document.getElementById("zeekup-list");
+          const item = document.createElement("li");
+          item.textContent = content;
+          list.prepend(item);
+        }
       }
     }
-  }
-</script>
+  </script>
 </body>
 </html>
