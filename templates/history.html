@@ -28,6 +28,14 @@
   <div class="chatbox">
     <h2>📜 Zeekup AI – Mesaj Geçmişi (Admin Paneli)</h2>
 
+    <!-- 🧠 Admin Bilgileri -->
+    <div style="background:#111;padding:15px;border-radius:10px;margin-bottom:20px;">
+      <p><strong>📌 Toplam Mesaj:</strong> {{ total_count }}</p>
+      <p><strong>📅 Bugün Gelen:</strong> {{ today_count }}</p>
+      <p><strong>⏱️ En Son Mesaj:</strong> {{ last_msg }}</p>
+      <p><strong>🔁 En Çok Kullanılan Kelime:</strong> {{ most_used_word }}</p>
+    </div>
+
     {% if messages %}
     <table>
       <thead>
