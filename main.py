@@ -3,22 +3,23 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from transformers import AutoTokenizer, AutoModelWithLMHead
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import torch
 
 app = FastAPI()
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# Türkçe destekli hafif model (Render dostu)
+model_name = "csebuetnlp/mT5_multilingual_XLSum"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
 chat_history = []
 
-# Türkçe destekli küçük model (özetleme veya basit yanıtlar için)
-model_name = "mrm8488/t5-base-turkish-summarizer"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelWithLMHead.from_pretrained(model_name)
-
 def generate_reply(message: str) -> str:
-    input_text = "soru: " + message
+    input_text = "summarize: " + message
     inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
     outputs = model.generate(inputs, max_length=100, num_return_sequences=1)
     reply = tokenizer.decode(outputs[0], skip_special_tokens=True)
